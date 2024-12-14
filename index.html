@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Progress Widget</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f4f4f4;
+      margin: 0;
+    }
+    .widget {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 300px;
+    }
+    .date {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .time {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .time div {
+      font-size: 32px;
+      padding: 5px 10px;
+      border: 2px solid #000;
+      border-radius: 5px;
+    }
+    .progress-container {
+      margin-top: 10px;
+    }
+    .progress-bar {
+      width: 100%;
+      height: 20px;
+      background: #e0e0e0;
+      border-radius: 10px;
+      position: relative;
+      margin-bottom: 10px;
+    }
+    .progress-bar .progress {
+      height: 100%;
+      background: #333;
+      border-radius: 10px;
+      text-align: right;
+      color: #fff;
+      line-height: 20px;
+      padding-right: 5px;
+      box-sizing: border-box;
+    }
+    .progress-label {
+      font-size: 14px;
+      margin-bottom: 5px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <div class="widget">
+    <div class="date" id="date"></div>
+    <div class="time">
+      <div id="hours">00</div> : <div id="minutes">00</div> : <div id="seconds">00</div>
+    </div>
+    <div class="progress-container">
+      <div class="progress-label">今年：</div>
+      <div class="progress-bar">
+        <div class="progress" id="year-progress">0%</div>
+      </div>
+      <div class="progress-label">本周：</div>
+      <div class="progress-bar">
+        <div class="progress" id="week-progress">0%</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function updateWidget() {
+      const now = new Date();
+
+      // 更新日期
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      document.getElementById('date').textContent = `${year}\n${month}/${day}`;
+
+      // 更新时间
+      document.getElementById('hours').textContent = String(now.getHours()).padStart(2, '0');
+      document.getElementById('minutes').textContent = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('seconds').textContent = String(now.getSeconds()).padStart(2, '0');
+
+      // 计算年度进度
+      const startOfYear = new Date(year, 0, 1);
+      const endOfYear = new Date(year + 1, 0, 1);
+      const yearProgress = ((now - startOfYear) / (endOfYear - startOfYear)) * 100;
+      document.getElementById('year-progress').style.width = `${yearProgress.toFixed(1)}%`;
+      document.getElementById('year-progress').textContent = `${Math.floor((now - startOfYear) / (24 * 60 * 60 * 1000))} / ${Math.floor((endOfYear - startOfYear) / (24 * 60 * 60 * 1000))} (${yearProgress.toFixed(1)}%)`;
+
+      // 计算本周进度
+      const startOfWeek = new Date(now);
+      startOfWeek.setDate(now.getDate() - now.getDay());
+      const endOfWeek = new Date(startOfWeek);
+      endOfWeek.setDate(startOfWeek.getDate() + 7);
+      const weekProgress = ((now - startOfWeek) / (endOfWeek - startOfWeek)) * 100;
+      document.getElementById('week-progress').style.width = `${weekProgress.toFixed(1)}%`;
+      document.getElementById('week-progress').textContent = `${now.getDay()} / 7 (${weekProgress.toFixed(1)}%)`;
+    }
+
+    // 初始更新并每秒刷新
+    updateWidget();
+    setInterval(updateWidget, 1000);
+  </script>
+</body>
+</html>
